@@ -1,6 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
@@ -24,6 +28,13 @@ public class Window extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(new File("resources/road.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         super.paintComponents(g);
         Graphics2D brush = (Graphics2D) g;
         int width = getWidth();
@@ -31,6 +42,7 @@ public class Window extends JPanel {
         g.clearRect(0, 0, width, height);
         brush.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
+        g.drawImage(image, 0, 0, this);
         brush.draw(circle);
     }
 
