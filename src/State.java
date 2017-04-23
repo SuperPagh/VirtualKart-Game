@@ -62,10 +62,10 @@ public class State {
                 double x = temp.getX();
                 double y = temp.getY() + dy;
 
-                double newX = y/x * 0.2;
-                double newY = 0.5 / (x+0.2)*x;
+                double newX = y/x * 0.643;
+                double newY = 0.5 / (Math.sqrt(x)+0.2)*Math.sqrt(x);
 
-                newY = newY * 10 - 4;
+                newY = newY * 10 - 4.2;
 
                 result.add(new Vector2D(newX, newY));
             }

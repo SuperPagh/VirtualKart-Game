@@ -30,21 +30,46 @@ public class Window extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(new File("resources/road.jpg"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         super.paintComponents(g);
-        Graphics2D brush = (Graphics2D) g;
         int width = getWidth();
         int height = getHeight();
         g.clearRect(0, 0, width, height);
-        brush.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        g.drawImage(state.getMapImage(), 0, 0, this);
+
+        double dAngle = state.getCurrentDirection().getAngle() - state.getDirs().get(state.getCurrentPos()).getAngle();
+        double beta = 1;
+        double alpha = 1;
+
+
+        if(dAngle > 0) {
+            beta = 1;
+            alpha = 0.5 + (1 - dAngle) / 2;
+        } else {
+            beta = 1 + dAngle / 2;
+            alpha = 1;
+        }
+        int imageWidth = state.getMapImage().getWidth(this);
+        int imageHeight = state.getMapImage().getHeight(this);
+        double imageSplits = 200;
+        for(int i = 0; i < imageSplits; i++) {
+            int minX = (int) (width / imageSplits * i);
+            int maxX = (int) (width / imageSplits * (i+1));
+            System.out.println((int)(imageWidth/4*(dAngle+(i-imageSplits/2)/imageSplits)+imageWidth/2));
+            System.out.println((int)(imageWidth/4*(dAngle+(i-(imageSplits/2-1))/imageSplits)+imageWidth/2));
+
+            g.drawImage(
+                    state.getMapImage(),
+                    minX,
+                    0,
+                    maxX,
+                    height,
+                    (int)(imageWidth/4*(dAngle+(i-imageSplits/2)/imageSplits)+imageWidth/2),
+                    (int) ((alpha*i+beta*(imageSplits-i))/imageSplits*(imageHeight/2)-imageHeight/4),
+                    (int)(imageWidth/4*(dAngle+(i-(imageSplits/2-1))/imageSplits)+imageWidth/2),
+                    (int) ((beta*i+alpha*(imageSplits-i))/imageSplits*(imageHeight/2)),
+                    this);
+        }
+
+
 
         for(int j = -1; j <= 1; j+=2) {
             if (j == 1) {
@@ -61,8 +86,6 @@ public class Window extends JPanel {
                 g.drawLine(x1, y1, x2, y2);
             }
         }
-
-        brush.draw(circle);
     }
 
     public class MoveCircle implements KeyListener {
@@ -84,17 +107,14 @@ public class Window extends JPanel {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    circle.y -= 5;
                     break;
                 case KeyEvent.VK_LEFT: {
-                    double newAngle = state.getCurrentDirection().getAngle() + 0.1;
-                    state.setCurrentDirection(Vector2D.getVector2DFromAngleAndMagnitude(newAngle,1));
-                    circle.x -= 5;
-                    break; }
-                case KeyEvent.VK_RIGHT: {
                     double newAngle = state.getCurrentDirection().getAngle() - 0.1;
                     state.setCurrentDirection(Vector2D.getVector2DFromAngleAndMagnitude(newAngle,1));
-                    circle.x += 5;
+                    break; }
+                case KeyEvent.VK_RIGHT: {
+                    double newAngle = state.getCurrentDirection().getAngle() + 0.1;
+                    state.setCurrentDirection(Vector2D.getVector2DFromAngleAndMagnitude(newAngle,1));
                     break; }
             }
             repaint();
