@@ -1,5 +1,3 @@
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
@@ -46,6 +44,8 @@ public class Window extends JPanel {
         g.clearRect(0, 0, width, height);
         brush.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
+        g.drawImage(state.getMapImage(), 0, 0, this);
+
         for(int j = -1; j <= 1; j+=2) {
             if (j == 1) {
                 g.setColor(Color.RED);
@@ -54,14 +54,14 @@ public class Window extends JPanel {
             }
             List<Vector2D> lines = state.pointsToDraw(j*2.76);
             for(int i = 1; i < lines.size(); i++) {
-                int x1 = (int) ((lines.get(i-1).getX()+1) * (width/2));
-                int x2 = (int) ((lines.get(i).getX()+1) * (width/2));
+                int x1 = (int) ((-lines.get(i-1).getX()+1) * (width/2));
+                int x2 = (int) ((-lines.get(i).getX()+1) * (width/2));
                 int y1 = (int) ((1-lines.get(i-1).getY()) * height);
                 int y2 = (int) ((1-lines.get(i).getY()) * height);
                 g.drawLine(x1, y1, x2, y2);
             }
         }
-        //g.drawImage(image, 0, 0, this);
+
         brush.draw(circle);
     }
 
@@ -79,16 +79,20 @@ public class Window extends JPanel {
                     circle.y += 5;
                     break;
                 case KeyEvent.VK_UP:
-                    state.setCurrentPos(state.getCurrentPos()+1);
+                    try {
+                        state.setCurrentPos(state.getCurrentPos()+1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     circle.y -= 5;
                     break;
                 case KeyEvent.VK_LEFT: {
-                    double newAngle = state.getCurrentDirection().getAngle() - 0.1;
+                    double newAngle = state.getCurrentDirection().getAngle() + 0.1;
                     state.setCurrentDirection(Vector2D.getVector2DFromAngleAndMagnitude(newAngle,1));
                     circle.x -= 5;
                     break; }
                 case KeyEvent.VK_RIGHT: {
-                    double newAngle = state.getCurrentDirection().getAngle() + 0.1;
+                    double newAngle = state.getCurrentDirection().getAngle() - 0.1;
                     state.setCurrentDirection(Vector2D.getVector2DFromAngleAndMagnitude(newAngle,1));
                     circle.x += 5;
                     break; }
@@ -114,7 +118,7 @@ public class Window extends JPanel {
         window.requestFocusInWindow();
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         state = Parser.getListsOfVectors();
         SwingUtilities.invokeLater(() -> {

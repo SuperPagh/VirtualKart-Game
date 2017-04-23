@@ -1,14 +1,13 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Parser {
 
-    public static State getListsOfVectors() throws FileNotFoundException {
+    public static State getListsOfVectors() throws IOException {
         List<Vector2D> pointVectors = loadMap();
         List<Vector2D> directionVectors = new ArrayList<>();
 

@@ -1,3 +1,8 @@
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,18 +10,41 @@ public class State {
 
     private List<Vector2D> pointVectors;
     private List<Vector2D> directionVectors;
+    private Image mapImage;
     private int currentPos;
     private Vector2D currentDirection;
 
-    public State(List<Vector2D> pointVectors, List<Vector2D> directionVectors) {
-        this.pointVectors = pointVectors;
-        this.directionVectors = directionVectors;
-        this.currentPos = 0;
-        this.currentDirection = getDirs().get(0).unitVector();
+    public State(List<Vector2D> pointVectors, List<Vector2D> directionVectors) throws IOException {
+        setCurrentPos(0);
+        setPointVectors(pointVectors);
+        setDirectionVectors(directionVectors);
+        setCurrentDirection(getDirs().get(getCurrentPos()).unitVector());
     }
 
-    public void setCurrentPos(int currentPos) {
+    public void setDirectionVectors(List<Vector2D> directionVectors) {
+        this.directionVectors = directionVectors;
+    }
+
+    public void setPointVectors(List<Vector2D> pointVectors) {
+        this.pointVectors = pointVectors;
+    }
+
+    private void setMapImage(Image mapImage) {
+        this.mapImage = mapImage;
+    }
+
+    public Image getMapImage() {
+        return mapImage;
+    }
+
+    public void setCurrentPos(int currentPos) throws IOException {
         this.currentPos = currentPos;
+
+        setMapImage(ImageIO.read(new File("resources/map/frame"+getCurrentPos()+".jpg")));
+    }
+
+    public void incrementCurrentPos() throws IOException {
+        setCurrentPos(this.getCurrentPos()+1);
     }
 
     public void setCurrentDirection(Vector2D currentDirection) {
@@ -38,8 +66,6 @@ public class State {
                 double newY = 0.5 / (x+0.2)*x;
 
                 newY = newY * 10 - 4;
-                System.out.println("old = (" + x + "," + y + ")");
-                System.out.println("new = (" + newX + "," + newY + ")");
 
                 result.add(new Vector2D(newX, newY));
             }
